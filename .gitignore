@@ -27,6 +27,10 @@ android/gradle/wrapper/gradle-wrapper.jar
 # Logs
 *.log
 
+# Arquivos locais (não vão para o repositório)
+test/
+scripts/
+
 # Sistema
 .DS_Store
 Thumbs.db
