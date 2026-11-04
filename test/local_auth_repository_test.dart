@@ -66,6 +66,27 @@ void main() {
     expect((await afterLogout.signIn(email: email, password: password)).email, email);
   });
 
+  test('redefinir senha troca a senha de acesso', () async {
+    final repo = await newRepository();
+    await repo.register(name: 'Ana', email: email, password: password);
+    await repo.verifyEmail(email);
+    await repo.confirmPasswordReset(email: email, newPassword: 'novaSenha1');
+
+    expect(
+      () => repo.signIn(email: email, password: password),
+      throwsA(isA<AuthException>().having((e) => e.code, 'code', AuthErrorCode.invalidCredentials)),
+    );
+    expect((await repo.signIn(email: email, password: 'novaSenha1')).email, email);
+  });
+
+  test('redefinir senha de e-mail inexistente avisa que não há conta', () async {
+    final repo = await newRepository();
+    expect(
+      () => repo.confirmPasswordReset(email: 'nao@existe.com', newPassword: 'novaSenha1'),
+      throwsA(isA<AuthException>().having((e) => e.code, 'code', AuthErrorCode.userNotFound)),
+    );
+  });
+
   test('a senha não é salva em texto puro', () async {
     final repo = await newRepository();
     await repo.register(name: 'Ana', email: email, password: password);

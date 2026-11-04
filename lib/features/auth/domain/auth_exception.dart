@@ -7,6 +7,7 @@ enum AuthErrorCode {
   emailAlreadyInUse,
   weakPassword,
   emailNotVerified,
+  userNotFound,
   unknown,
 }
 
@@ -24,6 +25,7 @@ class AuthException implements Exception {
         AuthErrorCode.weakPassword => 'A senha é muito fraca.',
         AuthErrorCode.emailNotVerified =>
           'Confirme seu e-mail antes de entrar.',
+        AuthErrorCode.userNotFound => 'Não encontramos uma conta com este e-mail.',
         AuthErrorCode.unknown => 'Algo deu errado. Tente novamente.',
       };
 

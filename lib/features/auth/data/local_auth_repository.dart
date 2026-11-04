@@ -117,6 +117,24 @@ class LocalAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> confirmPasswordReset({
+    required String email,
+    required String newPassword,
+  }) async {
+    await Future<void>.delayed(latency);
+    final accounts = _readAccounts();
+    final key = _normalize(email);
+    final account = accounts[key];
+    if (account == null) throw const AuthException(AuthErrorCode.userNotFound);
+    if (newPassword.length < 6) {
+      throw const AuthException(AuthErrorCode.weakPassword);
+    }
+    final salt = _newSalt();
+    accounts[key] = account.copyWith(salt: salt, passwordHash: _hash(newPassword, salt));
+    await _writeAccounts(accounts);
+  }
+
+  @override
   Future<void> signOut() async {
     await _prefs.remove(_sessionKey);
     _emit(null);
@@ -192,12 +210,12 @@ class _Account {
         'emailVerified': emailVerified,
       };
 
-  _Account copyWith({bool? emailVerified}) => _Account(
+  _Account copyWith({bool? emailVerified, String? salt, String? passwordHash}) => _Account(
         uid: uid,
         name: name,
         email: email,
-        salt: salt,
-        passwordHash: passwordHash,
+        salt: salt ?? this.salt,
+        passwordHash: passwordHash ?? this.passwordHash,
         emailVerified: emailVerified ?? this.emailVerified,
       );
 

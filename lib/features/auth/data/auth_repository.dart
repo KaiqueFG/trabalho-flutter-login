@@ -29,5 +29,11 @@ abstract interface class AuthRepository {
 
   Future<void> sendPasswordReset(String email);
 
+  /// Define a nova senha da conta (equivale a abrir o link de redefinição).
+  Future<void> confirmPasswordReset({
+    required String email,
+    required String newPassword,
+  });
+
   Future<void> signOut();
 }

@@ -5,6 +5,7 @@ import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../data/auth_repository.dart';
 import '../auth_scope.dart';
+import '../pages/reset_password_page.dart';
 
 /// Abre o diálogo de recuperação de senha (modelo do `sendPasswordResetEmail` do Firebase Auth).
 Future<void> showForgotPasswordDialog(BuildContext context, {String? email}) {
@@ -38,12 +39,13 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
     try {
-      await AuthScope.of(context).sendPasswordReset(_emailController.text);
+      final email = _emailController.text.trim();
+      await AuthScope.of(context).sendPasswordReset(email);
       if (!mounted) return;
-      Navigator.of(context).pop();
-      // Mensagem neutra: não revela se o e-mail está cadastrado.
-      context.showSnack(
-        'Se houver uma conta com este e-mail, você receberá o link de redefinição.',
+      final navigator = Navigator.of(context)..pop();
+      // Segue para a tela que simula a abertura do link enviado por e-mail.
+      navigator.push(
+        MaterialPageRoute<void>(builder: (_) => ResetPasswordPage(email: email)),
       );
     } on AuthException catch (e) {
       if (!mounted) return;

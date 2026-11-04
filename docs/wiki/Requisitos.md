@@ -6,7 +6,7 @@
 - **RF02** - Após o cadastro, o sistema deve verificar o e-mail do usuário.
 - **RF03** - O usuário deve conseguir fazer login com e-mail e senha.
 - **RF04** - O sistema só deve permitir login de usuários com e-mail verificado.
-- **RF05** - O usuário deve conseguir pedir a recuperação de senha.
+- **RF05** - O usuário deve conseguir recuperar a senha, criando uma nova senha pelo link enviado.
 - **RF06** - O usuário deve conseguir sair da conta.
 - **RF07** - O sistema deve mostrar mensagens de erro quando os dados estiverem errados.
 

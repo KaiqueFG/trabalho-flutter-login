@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth_base/app/app.dart';
 import 'package:flutter_auth_base/features/auth/data/local_auth_repository.dart';
+import 'package:flutter_auth_base/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:flutter_auth_base/features/auth/presentation/pages/verify_email_page.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -110,6 +111,32 @@ void main() {
     await tester.pump(VerifyEmailPage.verificationDelay);
     await tester.pumpAndSettle();
     expect(find.text('E-mail verificado!'), findsOneWidget);
+  });
+
+  testWidgets('esqueci a senha → link → nova senha → login com a nova senha', (tester) async {
+    await tester.runAsync(() async {
+      await repository.register(name: 'Maria', email: 'maria@teste.com', password: 'senha123');
+      await repository.verifyEmail('maria@teste.com');
+    });
+    await pumpApp(tester);
+
+    await fill(tester, 'E-mail', 'maria@teste.com');
+    await tap(tester, 'Esqueci minha senha');
+    await tap(tester, 'Enviar link', settle: false);
+    expect(find.text('Aguardando você abrir o link...'), findsOneWidget);
+
+    await tester.pump(ResetPasswordPage.linkDelay);
+    await tester.pumpAndSettle();
+    await fill(tester, 'Nova senha', 'novaSenha1');
+    await fill(tester, 'Confirmar nova senha', 'novaSenha1');
+    await tap(tester, 'Salvar nova senha');
+    expect(find.text('Senha alterada!'), findsOneWidget);
+
+    await tap(tester, 'Ir para o login');
+    await fill(tester, 'E-mail', 'maria@teste.com');
+    await fill(tester, 'Senha', 'novaSenha1');
+    await tap(tester, 'Entrar');
+    expect(find.text('Login realizado com sucesso!'), findsOneWidget);
   });
 
   testWidgets('cadastro rejeita senhas diferentes', (tester) async {

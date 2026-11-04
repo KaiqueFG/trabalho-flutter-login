@@ -24,7 +24,9 @@ Como usuário, quero entrar com meu e-mail e senha, para acessar minha conta.
 Como usuário, quero recuperar minha senha, caso eu esqueça.
 
 - Na tela de login tem a opção "Esqueci minha senha".
-- O usuário informa o e-mail para receber o link de redefinição.
+- O usuário informa o e-mail e o sistema envia o link de redefinição.
+- Ao abrir o link, o usuário cria a nova senha e confirma.
+- Depois de salvar, aparece a mensagem de sucesso e o botão para ir ao login.
 
 ### US05 - Sair da conta
 Como usuário, quero sair da minha conta.
