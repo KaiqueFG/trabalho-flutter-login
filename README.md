@@ -3,8 +3,8 @@
 Aplicativo Android em Flutter com cadastro e login de usuários por e-mail e senha, construído por etapas.
 
 **Integrantes**
-- Kaique ([@KaiqueFG](https://github.com/KaiqueFG))
-- _[nome do(a) colega]_ ([@_usuario_](https://github.com/))
+- Kaique Fantin Gaiarim — RA 60003260 ([@KaiqueFG](https://github.com/KaiqueFG))
+- Gabriel Yoshio — RA 60006093
 
 **Documentação complementar:** requisitos e histórias de usuário estão na [Wiki do repositório](https://github.com/KaiqueFG/trabalho-flutter-login/wiki).
 
@@ -46,9 +46,7 @@ _[link do vídeo não listado no YouTube]_
 
 ### Declaração de uso de IA
 
-> ⚠️ **Rascunho — revisar e completar com as palavras de vocês antes de entregar.**
-
-**Usamos IA?** Sim. Usamos o Claude (Anthropic), pelo aplicativo Claude Code.
+**Usamos IA?** Sim. Usamos o Claude (Anthropic), pelo aplicativo Claude Code. Esta declaração também foi redigida com ajuda da IA e revisada por nós.
 
 **Para quê:**
 - Configurar o ambiente: instalar o Flutter e o Git e resolver erros de compatibilidade entre o Gradle e o Java do Android Studio
@@ -71,4 +69,10 @@ _[link do vídeo não listado no YouTube]_
 - Simplificamos a documentação da Wiki
 
 **O que aprendemos:**
-- _[completar: por exemplo, como funciona a navegação entre telas, o que é um Form com validators, por que salvar o hash da senha, o que é estado (setState), etc.]_
+- **Ambiente:** o Flutter precisa estar no PATH para o Android Studio reconhecer o projeto, e a versão do Gradle precisa ser compatível com a versão do Java. O Android Studio novo traz o Java 25, que só funciona com o Gradle 9.
+- **Telas e navegação:** cada tela é um widget. Com o `Navigator`, uma tela é aberta por cima da outra (`push`), e dá para voltar até a primeira (`popUntil`). O `AuthGate` decide sozinho entre o login e o início conforme o usuário está logado ou não.
+- **Formulários:** um `Form` com `validator` em cada campo verifica os dados antes de enviar, e cada regra devolve uma mensagem de erro.
+- **Estado:** `setState` atualiza a tela quando algo muda, como o botão de carregando ou a troca da etapa de verificação para a de sucesso.
+- **Segurança:** salvar a senha em texto puro é perigoso. Guardamos só o hash (SHA-256 com *salt*) e, no login, comparamos o hash da senha digitada com o salvo.
+- **Requisitos:** requisitos funcionais descrevem o que o sistema faz; os não funcionais descrevem como ele deve ser (plataforma, segurança, usabilidade).
+- **Revisão:** nem tudo que a IA gera está certo de primeira. Testando o app como usuários, encontramos pontos que faltavam, como a recuperação de senha que não verificava se a conta existia, e pedimos as correções.
