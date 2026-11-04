@@ -19,10 +19,17 @@ class AuthGate extends StatefulWidget {
 class _AuthGateState extends State<AuthGate> {
   Stream<AppUser?>? _authState;
 
+  /// Usuário cuja sessão foi restaurada ao abrir o app (não fez login agora).
+  String? _restoredUid;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _authState ??= AuthScope.of(context).authStateChanges();
+    if (_authState == null) {
+      final repository = AuthScope.of(context);
+      _restoredUid = repository.currentUser?.uid;
+      _authState = repository.authStateChanges();
+    }
   }
 
   @override
@@ -32,11 +39,17 @@ class _AuthGateState extends State<AuthGate> {
       initialData: AuthScope.of(context).currentUser,
       builder: (context, snapshot) {
         final user = snapshot.data;
+        // Depois de sair, o próximo acesso é um login novo.
+        if (user == null) _restoredUid = null;
         return AnimatedSwitcher(
           duration: const Duration(milliseconds: 350),
           child: user == null
               ? const LoginPage(key: ValueKey('login'))
-              : HomePage(key: ValueKey(user.uid), user: user),
+              : HomePage(
+                  key: ValueKey(user.uid),
+                  user: user,
+                  showLoginSuccess: user.uid != _restoredUid,
+                ),
         );
       },
     );

@@ -15,8 +15,7 @@ abstract final class AppTheme {
     );
     final shape = BorderRadius.circular(radius);
 
-    OutlineInputBorder border(Color color, [double width = 1]) =>
-        OutlineInputBorder(
+    OutlineInputBorder border(Color color, [double width = 1]) => OutlineInputBorder(
           borderRadius: shape,
           borderSide: BorderSide(color: color, width: width),
         );
@@ -28,8 +27,7 @@ abstract final class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: scheme.surfaceContainerHighest.withValues(alpha: 0.45),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
         border: border(scheme.outlineVariant),
         enabledBorder: border(scheme.outlineVariant),
         focusedBorder: border(scheme.primary, 2),

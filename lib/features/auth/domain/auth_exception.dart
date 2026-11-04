@@ -8,6 +8,8 @@ enum AuthErrorCode {
   weakPassword,
   emailNotVerified,
   userNotFound,
+  tooManyRequests,
+  samePassword,
   unknown,
 }
 
@@ -23,9 +25,11 @@ class AuthException implements Exception {
         AuthErrorCode.invalidCredentials => 'E-mail ou senha incorretos.',
         AuthErrorCode.emailAlreadyInUse => 'Já existe uma conta com este e-mail.',
         AuthErrorCode.weakPassword => 'A senha é muito fraca.',
-        AuthErrorCode.emailNotVerified =>
-          'Confirme seu e-mail antes de entrar.',
+        AuthErrorCode.emailNotVerified => 'Confirme seu e-mail antes de entrar.',
         AuthErrorCode.userNotFound => 'Não encontramos uma conta com este e-mail.',
+        AuthErrorCode.tooManyRequests =>
+          'Muitas tentativas erradas. Aguarde 30 segundos e tente novamente.',
+        AuthErrorCode.samePassword => 'A nova senha deve ser diferente da atual.',
         AuthErrorCode.unknown => 'Algo deu errado. Tente novamente.',
       };
 

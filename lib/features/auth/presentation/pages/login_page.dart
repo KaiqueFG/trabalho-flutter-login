@@ -115,9 +115,8 @@ class _LoginPageState extends State<LoginPage> {
               AuthFooterLink(
                 question: 'Não tem uma conta?',
                 action: 'Cadastre-se',
-                onPressed: _loading
-                    ? null
-                    : () => Navigator.of(context).pushNamed(AppRoutes.register),
+                onPressed:
+                    _loading ? null : () => Navigator.of(context).pushNamed(AppRoutes.register),
               ),
             ],
           ),

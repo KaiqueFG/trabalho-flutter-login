@@ -9,8 +9,7 @@ void main() {
 
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
-  Future<LocalAuthRepository> newRepository() =>
-      LocalAuthRepository.create(latency: Duration.zero);
+  Future<LocalAuthRepository> newRepository() => LocalAuthRepository.create(latency: Duration.zero);
 
   test('cadastro cria conta não verificada e não inicia sessão', () async {
     final repo = await newRepository();

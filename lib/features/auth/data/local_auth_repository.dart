@@ -34,6 +34,12 @@ class LocalAuthRepository implements AuthRepository {
   /// Atraso artificial que imita o tempo de resposta de um servidor.
   final Duration latency;
 
+  /// Tentativas de senha errada antes de bloquear o login temporariamente.
+  static const maxFailedAttempts = 5;
+  static const lockDuration = Duration(seconds: 30);
+
+  final _failedAttempts = <String, int>{};
+  final _lockedUntil = <String, DateTime>{};
   final _controller = StreamController<AppUser?>.broadcast();
   final _random = Random.secure();
   AppUser? _currentUser;
@@ -50,10 +56,26 @@ class LocalAuthRepository implements AuthRepository {
   @override
   Future<AppUser> signIn({required String email, required String password}) async {
     await Future<void>.delayed(latency);
-    final account = _readAccounts()[_normalize(email)];
+    final key = _normalize(email);
+
+    final lockedUntil = _lockedUntil[key];
+    if (lockedUntil != null && DateTime.now().isBefore(lockedUntil)) {
+      throw const AuthException(AuthErrorCode.tooManyRequests);
+    }
+
+    final account = _readAccounts()[key];
     if (account == null || account.passwordHash != _hash(password, account.salt)) {
+      final attempts = (_failedAttempts[key] ?? 0) + 1;
+      if (attempts >= maxFailedAttempts) {
+        _failedAttempts.remove(key);
+        _lockedUntil[key] = DateTime.now().add(lockDuration);
+        throw const AuthException(AuthErrorCode.tooManyRequests);
+      }
+      _failedAttempts[key] = attempts;
       throw const AuthException(AuthErrorCode.invalidCredentials);
     }
+    _failedAttempts.remove(key);
+    _lockedUntil.remove(key);
     if (!account.emailVerified) {
       throw const AuthException(AuthErrorCode.emailNotVerified);
     }
@@ -131,9 +153,15 @@ class LocalAuthRepository implements AuthRepository {
     if (newPassword.length < 6) {
       throw const AuthException(AuthErrorCode.weakPassword);
     }
+    if (_hash(newPassword, account.salt) == account.passwordHash) {
+      throw const AuthException(AuthErrorCode.samePassword);
+    }
     final salt = _newSalt();
     accounts[key] = account.copyWith(salt: salt, passwordHash: _hash(newPassword, salt));
     await _writeAccounts(accounts);
+    // Senha nova: libera o login caso estivesse bloqueado.
+    _failedAttempts.remove(key);
+    _lockedUntil.remove(key);
   }
 
   @override
@@ -167,8 +195,7 @@ class LocalAuthRepository implements AuthRepository {
     return _prefs.setString(_accountsKey, jsonEncode(encoded));
   }
 
-  String _newSalt() =>
-      base64Url.encode(List<int>.generate(16, (_) => _random.nextInt(256)));
+  String _newSalt() => base64Url.encode(List<int>.generate(16, (_) => _random.nextInt(256)));
 
   static String _hash(String password, String salt) =>
       sha256.convert(utf8.encode('$salt:$password')).toString();

@@ -20,6 +20,5 @@ class AuthScope extends InheritedWidget {
   }
 
   @override
-  bool updateShouldNotify(AuthScope oldWidget) =>
-      repository != oldWidget.repository;
+  bool updateShouldNotify(AuthScope oldWidget) => repository != oldWidget.repository;
 }

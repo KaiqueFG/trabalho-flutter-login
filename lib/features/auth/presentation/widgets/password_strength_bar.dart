@@ -42,9 +42,7 @@ class PasswordStrengthBar extends StatelessWidget {
               strength.label,
               textAlign: TextAlign.end,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: strength == PasswordStrength.empty
-                        ? scheme.onSurfaceVariant
-                        : color,
+                    color: strength == PasswordStrength.empty ? scheme.onSurfaceVariant : color,
                     fontWeight: FontWeight.w600,
                   ),
             ),

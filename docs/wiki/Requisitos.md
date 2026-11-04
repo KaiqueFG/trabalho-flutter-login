@@ -19,6 +19,9 @@
 
 ## Regras
 
+- O nome deve ter apenas letras (acentos, espaço e hífen são permitidos).
 - O e-mail deve ser válido e não pode estar cadastrado.
 - A senha deve ter no mínimo 8 caracteres, com letras e números.
 - A confirmação de senha deve ser igual à senha.
+- Depois de 5 senhas erradas, o login fica bloqueado por 30 segundos.
+- A nova senha não pode ser igual à senha atual.

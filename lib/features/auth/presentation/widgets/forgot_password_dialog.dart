@@ -86,7 +86,8 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Icon(Icons.error_outline_rounded, size: 20, color: Theme.of(context).colorScheme.error),
+                  Icon(Icons.error_outline_rounded,
+                      size: 20, color: Theme.of(context).colorScheme.error),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(

@@ -5,9 +5,12 @@ import '../../auth/presentation/auth_scope.dart';
 
 /// Tela exibida após o login.
 class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.user});
+  const HomePage({super.key, required this.user, this.showLoginSuccess = true});
 
   final AppUser user;
+
+  /// Exibe o aviso de sucesso apenas logo após o login.
+  final bool showLoginSuccess;
 
   static const _success = Color(0xFF16A34A);
 
@@ -35,29 +38,31 @@ class HomePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  decoration: BoxDecoration(
-                    color: _success.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.check_circle_rounded, color: _success),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Login realizado com sucesso!',
-                          style: text.titleSmall?.copyWith(
-                            color: _success,
-                            fontWeight: FontWeight.w700,
+                if (showLoginSuccess) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    decoration: BoxDecoration(
+                      color: _success.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.check_circle_rounded, color: _success),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Login realizado com sucesso!',
+                            style: text.titleSmall?.copyWith(
+                              color: _success,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
+                ],
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(28),
