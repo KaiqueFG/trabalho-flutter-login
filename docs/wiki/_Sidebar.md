@@ -1,3 +1,0 @@
-- [Início](Home)
-- [Requisitos](Requisitos)
-- [Histórias de Usuário](Historias-de-Usuario)
