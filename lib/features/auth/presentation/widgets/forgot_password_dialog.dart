@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/utils/snackbar.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../data/auth_repository.dart';
@@ -28,6 +27,7 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
   final _formKey = GlobalKey<FormState>();
   late final _emailController = TextEditingController(text: widget.initialEmail);
   bool _loading = false;
+  String? _error;
 
   @override
   void dispose() {
@@ -36,6 +36,7 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
   }
 
   Future<void> _send() async {
+    setState(() => _error = null);
     if (!_formKey.currentState!.validate()) return;
     setState(() => _loading = true);
     try {
@@ -49,8 +50,11 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
       );
     } on AuthException catch (e) {
       if (!mounted) return;
-      context.showSnack(e.message, isError: true);
-      setState(() => _loading = false);
+      // O erro aparece dentro da janela, logo abaixo do campo.
+      setState(() {
+        _error = e.message;
+        _loading = false;
+      });
     }
   }
 
@@ -78,6 +82,21 @@ class _ForgotPasswordDialogState extends State<_ForgotPasswordDialog> {
               enabled: !_loading,
               onSubmitted: (_) => _send(),
             ),
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Icon(Icons.error_outline_rounded, size: 20, color: Theme.of(context).colorScheme.error),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _error!,
+                      style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),

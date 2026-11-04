@@ -113,7 +113,9 @@ class LocalAuthRepository implements AuthRepository {
     if (Validators.email(email) != null) {
       throw const AuthException(AuthErrorCode.invalidEmail);
     }
-    // Não revela se a conta existe (mesmo comportamento do Firebase Auth).
+    if (!_readAccounts().containsKey(_normalize(email))) {
+      throw const AuthException(AuthErrorCode.userNotFound);
+    }
   }
 
   @override

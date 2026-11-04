@@ -139,6 +139,16 @@ void main() {
     expect(find.text('Login realizado com sucesso!'), findsOneWidget);
   });
 
+  testWidgets('esqueci a senha com e-mail não cadastrado mostra erro', (tester) async {
+    await pumpApp(tester);
+    await fill(tester, 'E-mail', 'ninguem@teste.com');
+    await tap(tester, 'Esqueci minha senha');
+    await tap(tester, 'Enviar link');
+
+    expect(find.text('Não encontramos uma conta com este e-mail.'), findsOneWidget);
+    expect(find.text('Recuperar senha'), findsOneWidget);
+  });
+
   testWidgets('cadastro rejeita senhas diferentes', (tester) async {
     await pumpApp(tester);
     await tap(tester, 'Cadastre-se');

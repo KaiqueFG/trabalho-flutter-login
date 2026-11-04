@@ -82,6 +82,10 @@ void main() {
   test('redefinir senha de e-mail inexistente avisa que não há conta', () async {
     final repo = await newRepository();
     expect(
+      () => repo.sendPasswordReset('nao@existe.com'),
+      throwsA(isA<AuthException>().having((e) => e.code, 'code', AuthErrorCode.userNotFound)),
+    );
+    expect(
       () => repo.confirmPasswordReset(email: 'nao@existe.com', newPassword: 'novaSenha1'),
       throwsA(isA<AuthException>().having((e) => e.code, 'code', AuthErrorCode.userNotFound)),
     );

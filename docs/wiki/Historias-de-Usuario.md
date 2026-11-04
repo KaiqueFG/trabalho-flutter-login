@@ -25,6 +25,7 @@ Como usuário, quero recuperar minha senha, caso eu esqueça.
 
 - Na tela de login tem a opção "Esqueci minha senha".
 - O usuário informa o e-mail e o sistema envia o link de redefinição.
+- Se o e-mail não tiver conta cadastrada, aparece uma mensagem de erro.
 - Ao abrir o link, o usuário cria a nova senha e confirma.
 - Depois de salvar, aparece a mensagem de sucesso e o botão para ir ao login.
 
