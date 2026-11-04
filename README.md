@@ -41,8 +41,10 @@ Aplicativo Android em Flutter com cadastro e login de usuários por e-mail e sen
 | <img src="docs/prints/07-link-enviado.png" width="220"> | <img src="docs/prints/08-nova-senha.png" width="220"> | <img src="docs/prints/09-senha-alterada.png" width="220"> |
 
 ### Vídeo
+https://youtu.be/3K07-lYbtWs
 
-_[link do vídeo não listado no YouTube]_
+https://youtu.be/I2AuvMGq7M8
+
 
 ### Declaração de uso de IA
 
