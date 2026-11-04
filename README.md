@@ -1,34 +1,18 @@
-# Auth Base (Flutter)
+# Trabalho Flutter - Login e Cadastro
 
-Base de projeto Flutter para Android com **Login**, **Cadastro** e **Verificação de e-mail**, seguindo o modelo de autenticação por e-mail e senha do **Firebase Authentication**.
+Aplicativo em Flutter com login e cadastro por e-mail e senha, usando como referência o Firebase Auth.
 
-## Funcionalidades
+## Telas
 
-- Cadastro com nome, e-mail, senha, confirmação e indicador de força da senha
-- Verificação de e-mail simulada (5 segundos) com redirecionamento para o login
-- Login com mostrar/ocultar senha e preenchimento automático
-- Tela de início com confirmação de login
-- Recuperação de senha
-- Contas e sessão salvas no aparelho (senha protegida por hash SHA-256 com salt)
-- Material 3 com tema claro/escuro
+- Login
+- Cadastro
+- Verificação de e-mail
+- Início
 
-## Começando
+## Como rodar
 
-1. Instale o Flutter SDK e o plugin Flutter no Android Studio.
-2. No Android Studio: **File → Open** → esta pasta → clique em **Pub get**.
-3. Escolha o emulador e clique em **Run ▶**.
+1. Abrir o projeto no Android Studio
+2. Executar `flutter pub get`
+3. Iniciar o emulador e clicar em Run
 
-Ou pelo terminal:
-
-```bash
-powershell -ExecutionPolicy Bypass -File scripts\run.ps1
-```
-
-O passo a passo completo está em [docs/wiki/Etapa-0.md](docs/wiki/Etapa-0.md).
-
-## Documentação (wiki)
-
-- [Etapa 0 — Ambiente](docs/wiki/Etapa-0.md)
-- [Requisitos](docs/wiki/Requisitos.md)
-- [Histórias de Usuário](docs/wiki/Historias-de-Usuario.md)
-- [Arquitetura](docs/wiki/Arquitetura.md)
+A documentação (requisitos e histórias de usuário) está na Wiki do repositório.
