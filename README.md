@@ -46,27 +46,37 @@ _[link do vídeo não listado no YouTube]_
 
 ### Declaração de uso de IA
 
-**Usamos IA?** Sim. Usamos o Claude (Anthropic), pelo aplicativo Claude Code. Esta declaração também foi redigida com ajuda da IA e revisada por nós.
+**Usamos IA?** Sim. Usamos o Claude (Anthropic), pelo aplicativo Claude Code, como assistente de programação. Nós definimos o que o app deveria fazer e guiamos a IA a cada passo. Ela gerou a maior parte do código e da documentação, e nós testamos, revisamos e pedimos as correções. Esta declaração também foi redigida com ajuda da IA e revisada por nós.
 
-**Para quê:**
-- Configurar o ambiente: instalar o Flutter e o Git e resolver erros de compatibilidade entre o Gradle e o Java do Android Studio
-- Gerar a estrutura do projeto e o código das telas de login, cadastro, verificação de e-mail, recuperação de senha e início
-- Escrever as validações dos formulários e a lógica de autenticação local
-- Escrever testes automatizados para conferir os fluxos
-- Redigir os requisitos e as histórias de usuário da Wiki
-- Criar o repositório no GitHub e publicar a Wiki
+**Como trabalhamos com a IA:**
+1. **Definimos** o que cada parte deveria fazer e pedimos à IA que implementasse
+2. **Testamos** o resultado no emulador, como usuários comuns
+3. **Encontramos os problemas** e pedimos as correções
+4. **Revisamos** o código para entender cada parte antes de entregar
+
+**Para que usamos:**
+- Configurar o ambiente (Flutter, Git, Gradle e Java no Android Studio)
+- Gerar o código das telas, das validações e da autenticação local
+- Escrever testes automatizados
+- Redigir os requisitos e as histórias de usuário a partir do que definimos
 
 **O que a IA sugeriu:**
 - Organizar o código por funcionalidade e separar a autenticação numa interface (`AuthRepository`) baseada nos métodos do Firebase Auth
 - Integrar o Firebase de verdade desde o início
 - Salvar a senha como hash SHA-256 com *salt*, em vez de texto puro
-- Bloquear o login depois de várias senhas erradas e validar o nome só com letras
+- Validar o nome só com letras e limitar o tamanho dos campos
 
-**O que nós decidimos ou alteramos:**
-- Não conectar o Firebase real nesta etapa, já que o enunciado pedia o Firebase Auth apenas como referência. A verificação de e-mail e a recuperação de senha passaram a ser simuladas.
-- Definimos o fluxo cadastro → verificação (5 segundos) → login → tela de sucesso
-- Pedimos que a recuperação de senha mostrasse erro para e-mail não cadastrado e levasse a uma tela de nova senha
-- Simplificamos a documentação da Wiki
+**O que nós definimos e corrigimos:**
+- **Escopo:** usar o Firebase Auth como modelo, sem conectar o Firebase real nesta etapa. Por isso a verificação de e-mail e a recuperação de senha são simuladas.
+- **Fluxo do app:** cadastro → verificação de e-mail (5 segundos) → login → tela de "Login realizado com sucesso!"
+- **Erros que encontramos testando o app:**
+  - o "Esqueci minha senha" só mostrava uma mensagem, sem deixar criar a nova senha: pedimos a tela de redefinição
+  - dava para redefinir a senha de um e-mail não cadastrado: pedimos o erro logo no envio do link
+- **Revisão que pedimos à IA**, simulando um usuário comum. Ela apontou, e nós aprovamos corrigir:
+  - o aviso de login aparecia toda vez que o app era reaberto
+  - não havia limite de tentativas de senha (agora bloqueia por 30 segundos após 5 erros)
+  - o nome aceitava números e a nova senha podia ser igual à antiga
+- **Repositório e documentação:** escolhemos o que entra no repositório e deixamos a documentação mais objetiva
 
 **O que aprendemos:**
 - **Ambiente:** o Flutter precisa estar no PATH para o Android Studio reconhecer o projeto, e a versão do Gradle precisa ser compatível com a versão do Java. O Android Studio novo traz o Java 25, que só funciona com o Gradle 9.
