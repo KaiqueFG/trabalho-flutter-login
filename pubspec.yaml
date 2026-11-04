@@ -1,0 +1,21 @@
+name: flutter_auth_base
+description: "Base de projeto Flutter com autenticação por e-mail e senha (modelo Firebase Auth)."
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  crypto: ^3.0.8
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.5.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
