@@ -11,22 +11,26 @@ import 'auth_repository.dart';
 /// Autenticação local que reproduz o comportamento do Firebase Auth
 /// (e-mail/senha).
 ///
-/// As contas ficam salvas no aparelho. A senha nunca é gravada: guarda-se
-/// apenas o hash SHA-256 da senha combinada com um salt aleatório por conta.
+/// Os dados do usuário ficam salvos no aparelho com o SharedPreferences.
+/// Como esse armazenamento é limitado, só um usuário é guardado: cada novo
+/// cadastro substitui o anterior. A senha nunca é gravada: guarda-se apenas
+/// o hash SHA-256 da senha combinada com um salt aleatório.
 class LocalAuthRepository implements AuthRepository {
   LocalAuthRepository._(this._prefs, this.latency) {
     _currentUser = _restoreSession();
   }
 
-  /// Carrega as contas e a sessão salvas no aparelho.
+  /// Carrega o usuário e a sessão salvos no aparelho.
   static Future<LocalAuthRepository> create({
     Duration latency = const Duration(milliseconds: 700),
   }) async {
     final prefs = await SharedPreferences.getInstance();
+    // Versões anteriores guardavam várias contas nesta chave.
+    await prefs.remove('auth.accounts');
     return LocalAuthRepository._(prefs, latency);
   }
 
-  static const _accountsKey = 'auth.accounts';
+  static const _userKey = 'auth.user';
   static const _sessionKey = 'auth.session';
 
   final SharedPreferences _prefs;
@@ -63,7 +67,7 @@ class LocalAuthRepository implements AuthRepository {
       throw const AuthException(AuthErrorCode.tooManyRequests);
     }
 
-    final account = _readAccounts()[key];
+    final account = _findAccount(key);
     if (account == null || account.passwordHash != _hash(password, account.salt)) {
       final attempts = (_failedAttempts[key] ?? 0) + 1;
       if (attempts >= maxFailedAttempts) {
@@ -100,10 +104,6 @@ class LocalAuthRepository implements AuthRepository {
     if (password.length < 6) {
       throw const AuthException(AuthErrorCode.weakPassword);
     }
-    final accounts = _readAccounts();
-    if (accounts.containsKey(key)) {
-      throw const AuthException(AuthErrorCode.emailAlreadyInUse);
-    }
 
     final salt = _newSalt();
     final account = _Account(
@@ -114,19 +114,20 @@ class LocalAuthRepository implements AuthRepository {
       passwordHash: _hash(password, salt),
       emailVerified: false,
     );
-    accounts[key] = account;
-    await _writeAccounts(accounts);
+    // O novo cadastro substitui o usuário anterior e encerra a sessão dele.
+    await _writeAccount(account);
+    await _prefs.remove(_sessionKey);
+    _failedAttempts.clear();
+    _lockedUntil.clear();
+    if (_currentUser != null) _emit(null);
     return account.toUser();
   }
 
   @override
   Future<void> verifyEmail(String email) async {
-    final accounts = _readAccounts();
-    final key = _normalize(email);
-    final account = accounts[key];
+    final account = _findAccount(_normalize(email));
     if (account == null) throw const AuthException(AuthErrorCode.unknown);
-    accounts[key] = account.copyWith(emailVerified: true);
-    await _writeAccounts(accounts);
+    await _writeAccount(account.copyWith(emailVerified: true));
   }
 
   @override
@@ -135,7 +136,7 @@ class LocalAuthRepository implements AuthRepository {
     if (Validators.email(email) != null) {
       throw const AuthException(AuthErrorCode.invalidEmail);
     }
-    if (!_readAccounts().containsKey(_normalize(email))) {
+    if (_findAccount(_normalize(email)) == null) {
       throw const AuthException(AuthErrorCode.userNotFound);
     }
   }
@@ -146,9 +147,8 @@ class LocalAuthRepository implements AuthRepository {
     required String newPassword,
   }) async {
     await Future<void>.delayed(latency);
-    final accounts = _readAccounts();
     final key = _normalize(email);
-    final account = accounts[key];
+    final account = _findAccount(key);
     if (account == null) throw const AuthException(AuthErrorCode.userNotFound);
     if (newPassword.length < 6) {
       throw const AuthException(AuthErrorCode.weakPassword);
@@ -157,8 +157,7 @@ class LocalAuthRepository implements AuthRepository {
       throw const AuthException(AuthErrorCode.samePassword);
     }
     final salt = _newSalt();
-    accounts[key] = account.copyWith(salt: salt, passwordHash: _hash(newPassword, salt));
-    await _writeAccounts(accounts);
+    await _writeAccount(account.copyWith(salt: salt, passwordHash: _hash(newPassword, salt)));
     // Senha nova: libera o login caso estivesse bloqueado.
     _failedAttempts.remove(key);
     _lockedUntil.remove(key);
@@ -173,7 +172,7 @@ class LocalAuthRepository implements AuthRepository {
   AppUser? _restoreSession() {
     final email = _prefs.getString(_sessionKey);
     if (email == null) return null;
-    return _readAccounts()[email]?.toUser();
+    return _findAccount(email)?.toUser();
   }
 
   void _emit(AppUser? user) {
@@ -181,19 +180,16 @@ class LocalAuthRepository implements AuthRepository {
     _controller.add(user);
   }
 
-  Map<String, _Account> _readAccounts() {
-    final raw = _prefs.getString(_accountsKey);
-    if (raw == null) return {};
-    final decoded = jsonDecode(raw) as Map<String, dynamic>;
-    return decoded.map(
-      (email, json) => MapEntry(email, _Account.fromJson(json as Map<String, dynamic>)),
-    );
+  /// Usuário salvo no aparelho, se o e-mail for o dele.
+  _Account? _findAccount(String email) {
+    final raw = _prefs.getString(_userKey);
+    if (raw == null) return null;
+    final account = _Account.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+    return account.email == email ? account : null;
   }
 
-  Future<void> _writeAccounts(Map<String, _Account> accounts) {
-    final encoded = accounts.map((email, account) => MapEntry(email, account.toJson()));
-    return _prefs.setString(_accountsKey, jsonEncode(encoded));
-  }
+  Future<void> _writeAccount(_Account account) =>
+      _prefs.setString(_userKey, jsonEncode(account.toJson()));
 
   String _newSalt() => base64Url.encode(List<int>.generate(16, (_) => _random.nextInt(256)));
 
@@ -203,7 +199,7 @@ class LocalAuthRepository implements AuthRepository {
   static String _normalize(String email) => email.trim().toLowerCase();
 }
 
-/// Registro de uma conta como fica salvo no aparelho.
+/// Dados do usuário como ficam salvos no aparelho.
 class _Account {
   const _Account({
     required this.uid,
