@@ -88,3 +88,41 @@ https://youtu.be/I2AuvMGq7M8
 - **Segurança:** salvar a senha em texto puro é perigoso. Guardamos só o hash (SHA-256 com *salt*) e, no login, comparamos o hash da senha digitada com o salvo.
 - **Requisitos:** requisitos funcionais descrevem o que o sistema faz; os não funcionais descrevem como ele deve ser (plataforma, segurança, usabilidade).
 - **Revisão:** nem tudo que a IA gera está certo de primeira. Testando o app como usuários, encontramos pontos que faltavam, como a recuperação de senha que não verificava se a conta existia, e pedimos as correções.
+
+---
+
+## Etapa 2 — Tela principal
+
+### O que foi feito
+- **Dados do usuário no SharedPreferences:** o app guarda só um usuário no aparelho (chave `auth.user`). Como esse armazenamento é limitado, cada novo cadastro substitui o anterior, e o usuário antigo deixa de conseguir entrar. A senha continua salva apenas como hash.
+- **Drawer navigation:** a tela principal agora tem um menu lateral, aberto pelo ícone ☰, com o nome e o e-mail do usuário, a opção **Início** e a opção **Sair**.
+- **Tela principal em branco:** o conteúdo da tela de início ficou vazio, para receber as próximas etapas. O aviso "Login realizado com sucesso!" passou a aparecer numa mensagem na parte de baixo da tela.
+
+### Prints
+
+| Tela principal | Menu lateral |
+|:---:|:---:|
+| <img src="docs/prints/10-tela-principal.png" width="220"> | <img src="docs/prints/11-menu-lateral.png" width="220"> |
+
+### Vídeo
+_[link do vídeo não listado no YouTube]_
+
+### Declaração de uso de IA
+
+**Usamos IA?** Sim, o Claude (Anthropic), pelo Claude Code, do mesmo jeito da etapa anterior: nós passamos o enunciado e definimos o comportamento, a IA gerou o código, e nós testamos no emulador e revisamos.
+
+**Para que usamos:** trocar o armazenamento de várias contas por um único usuário, criar o menu lateral e ajustar os testes.
+
+**O que a IA sugeriu:**
+- Usar o `UserAccountsDrawerHeader`, que já mostra o avatar, o nome e o e-mail no topo do menu
+- Encerrar a sessão do usuário anterior quando um novo cadastro o substitui
+- Mostrar o aviso de login num `SnackBar`, para a tela principal ficar realmente em branco
+
+**O que nós definimos e alteramos:**
+- Seguimos o enunciado: um único usuário salvo, com o novo cadastro substituindo o anterior
+- Deixamos no menu só o que faz sentido agora (Início e Sair)
+- Testamos no emulador: cadastro, login, abrir o menu e sair
+
+**O que aprendemos:**
+- **SharedPreferences:** guarda pares chave/valor simples. Para salvar um objeto, convertemos para JSON. Não é um banco de dados, por isso guardamos só um usuário.
+- **Drawer:** o `Scaffold` tem a propriedade `drawer`, e o `AppBar` mostra o ícone ☰ sozinho. Para fechar o menu, usamos `Navigator.pop`.
